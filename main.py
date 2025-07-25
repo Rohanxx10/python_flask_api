@@ -3,8 +3,7 @@ import google.generativeai as genai
 import json
 import os
 
-# Configure your Gemini API Key
-genai.configure(api_key="AIzaSyAQCcwP7SE_nBmDUt_8d37SZj5mSEAGB5g")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = Flask(__name__)
 
@@ -35,7 +34,6 @@ Question:
         response = model.generate_content(prompt)
         response_text = response.text.strip()
 
-        # Try to parse JSON content
         start = response_text.find('{')
         end = response_text.rfind('}')
         if start != -1 and end != -1:
@@ -47,10 +45,10 @@ Question:
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# Homepage route (optional)
 @app.route("/", methods=["GET"])
 def index():
     return "✅ Govt Scheme Info API is running!"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=True)
